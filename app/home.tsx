@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   welcomeText: {
-    fontSize: 18,
+    fontSize: 20,
     marginBottom: 30,
     textAlign: 'center',
     color: '#333',
