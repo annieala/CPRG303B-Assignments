@@ -1,12 +1,14 @@
-// app/index.tsx
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { router } from 'expo-router';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import SignInForm from '../components/SignInForm';
+import { RootStackParamList } from '../types/navgation';
 
-export default function SignInScreen(): React.JSX.Element {
+type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
+
+export default function SignInScreen({ navigation }: SignInScreenProps): React.JSX.Element  {
   const handleSignInSuccess = (): void => {
-    router.push('/home');
+    navigation.navigate('Home');
   };
 
   return (
