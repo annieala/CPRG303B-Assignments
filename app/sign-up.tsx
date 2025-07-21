@@ -1,10 +1,11 @@
-// File: app/sign-up.tsx
+// app/sign-up.tsx
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { router } from 'expo-router';
 import SignUpForm from '../components/SignUpForm';
+import { useAuth } from '../context/AuthContext';
+import { useRouter } from 'expo-router';
 
-export default function SignUpScreen(): React.JSX.Element {
+export default function SignUpScreen() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -13,9 +14,10 @@ export default function SignUpScreen(): React.JSX.Element {
   const [loading, setLoading] = useState(false);
 
   const { signUp } = useAuth();
+  const router = useRouter();
 
-  const handleSignUp = async (): Promise<void> => {
-    // Validation
+  const handleSignUp = async () => {
+    setError('');
     if (!firstName.trim()) {
       setError('Please enter your first name');
       return;
@@ -34,25 +36,15 @@ export default function SignUpScreen(): React.JSX.Element {
     }
 
     setLoading(true);
-    setError('');
+    const { error } = await signUp(email, password, firstName, lastName);
 
-    try {
-      const result = await signUp(email, password, firstName, lastName);
-      
-      if (result.error) {
-        setError(result.error);
-      }
-      // Success case is handled automatically by AuthContext navigation
-    } catch (error) {
-      setError('An unexpected error occurred');
-      console.error('Sign up error:', error);
-    } finally {
-      setLoading(false);
+    if (error) {
+      setError(error.message || 'Sign-up failed');
+    } else {
+      // After successful signup, redirect to login page or landing
+      router.replace('/login');
     }
-  };
-
-  const handleNavigateToSignIn = (): void => {
-    router.push('/login');
+    setLoading(false);
   };
 
   return (
@@ -69,17 +61,12 @@ export default function SignUpScreen(): React.JSX.Element {
         onEmailChange={setEmail}
         onPasswordChange={setPassword}
         onSignUp={handleSignUp}
-        onNavigateToSignIn={handleNavigateToSignIn}
+        onNavigateToSignIn={() => router.push('/login')}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    backgroundColor: '#f5f5f5',
-  },
+  container: { flex: 1, justifyContent: 'center', paddingHorizontal: 20, backgroundColor: '#f5f5f5' },
 });
