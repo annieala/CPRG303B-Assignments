@@ -1,64 +1,62 @@
-// File: app/login.tsx (Updated)
+// File: app/login.tsx
 
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, Alert } from 'react-native';
-// REMOVE this import, we no longer need it here: import { router } from 'expo-router';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import SignInForm from '../components/SignInForm';
-import credentials from '../credentials.json';
-import { useAuth } from '../context/AuthContext'; // <-- ADD THIS IMPORT
+import { useAuth } from '../context/AuthContext';
+import { router } from 'expo-router';  // <-- Add router for navigation
 
 export default function LoginScreen() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { signIn } = useAuth(); // <-- GET THE SIGN-IN FUNCTION
+  const { signInWithEmailAndPassword } = useAuth();
 
-  const handleSignIn = () => {
-    // ... (all your validation logic remains the same)
-    if (username.length < 5) {
-      setError('Username must be at least 5 characters long.');
-      return;
-    }
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(password)) {
-      setError('Password must be 8+ characters with uppercase, lowercase, number, and special character.');
-      return;
-    }
-    const user = credentials.users.find(
-      (user) => user.username.toLowerCase() === username.toLowerCase()
-    );
-    if (!user) {
-      setError('Username not found.');
-      return;
-    }
-    if (user.password !== password) {
-      setError('Incorrect password.');
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      setError('Email and password are required.');
       return;
     }
 
-    // --- THIS IS THE KEY CHANGE ---
-    // If everything is correct, call signIn()
-    setError('');
-    signIn(); // <-- THIS WILL UPDATE THE STATE AND TRIGGER THE REDIRECT
+    try {
+      const result = await signInWithEmailAndPassword(email, password);
+
+      if (result?.error) {
+        setError(result.error.message || 'Login failed.');
+      } else {
+        setError('');
+        router.replace('/landing');  // <-- Redirect on successful login
+      }
+    } catch (err) {
+      console.error('Sign-in error:', err);
+      setError('An unexpected error occurred.');
+    }
+  };
+
+  const goToSignUp = () => {
+    router.push('/sign-up'); // <-- Navigate to Sign-Up page
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome!</Text>
       <SignInForm
-        username={username}
+        username={email}
         password={password}
-        onUsernameChange={setUsername}
+        onUsernameChange={setEmail}
         onPasswordChange={setPassword}
         onSignIn={handleSignIn}
         error={error}
       />
+
+      <TouchableOpacity onPress={goToSignUp}>
+        <Text style={styles.signupText}>Don't have an account? Sign up here.</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // ... (your styles remain the same)
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -70,5 +68,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 24,
+  },
+  signupText: {
+    color: '#007bff',
+    textAlign: 'center',
+    marginTop: 20,
+    textDecorationLine: 'underline',
   },
 });

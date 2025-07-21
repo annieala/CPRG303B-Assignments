@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import SignUpForm from '../components/SignUpForm';
-import { useAuth } from '../context/AuthContext';
 
 export default function SignUpScreen(): React.JSX.Element {
   const [firstName, setFirstName] = useState('');
