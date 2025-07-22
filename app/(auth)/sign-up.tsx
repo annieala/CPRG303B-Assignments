@@ -1,10 +1,12 @@
-// File: app/sign-up.tsx
+
+// File: app/(auth)/sign-up.tsx
 
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { router } from 'expo-router';
-import SignUpForm from '../components/SignUpForm';
-import { useAuth } from '../context/AuthContext';
+// ✅ FIXED: Corrected the import path to go up two directories
+import SignUpForm from '../../components/SignUpForm';
+import { useAuth } from '../../context/AuthContext';
 
 export default function SignUpScreen(): React.JSX.Element {
   const [firstName, setFirstName] = useState('');
@@ -17,24 +19,10 @@ export default function SignUpScreen(): React.JSX.Element {
   const { signUp } = useAuth();
 
   const handleSignUp = async (): Promise<void> => {
-    // Basic validation
-    if (!firstName.trim()) {
-      setError('Please enter your first name');
-      return;
+    if (!firstName || !lastName || !email || !password) {
+        setError("Please fill out all fields.");
+        return;
     }
-    if (!lastName.trim()) {
-      setError('Please enter your last name');
-      return;
-    }
-    if (!email.trim()) {
-      setError('Please enter your email');
-      return;
-    }
-    if (!password || password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-
     setLoading(true);
     setError('');
 
@@ -44,7 +32,11 @@ export default function SignUpScreen(): React.JSX.Element {
       if (result?.error) {
         setError(result.error);
       } else {
-        // ✅ Success — user is signed up, redirect handled in AuthContext if needed
+        Alert.alert(
+            "Sign Up Successful", 
+            "Please check your email to verify your account before logging in."
+        );
+        router.replace('/(auth)/login');
       }
     } catch (err) {
       console.error('Sign up error:', err);
@@ -55,7 +47,7 @@ export default function SignUpScreen(): React.JSX.Element {
   };
 
   const handleNavigateToSignIn = (): void => {
-    router.push('/login');
+    router.push('/(auth)/login');
   };
 
   return (

@@ -1,6 +1,7 @@
 // File: components/SignUpForm.tsx
+
 import React from 'react';
-import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
 
 // Define the types for the props this component will receive
 type SignUpFormProps = {
@@ -63,7 +64,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         onChangeText={onEmailChange}
         autoCapitalize="none"
         keyboardType="email-address"
-        autoComplete="email"
         editable={!loading}
       />
       
@@ -84,15 +84,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
         />
       </View>
       
-      <TouchableOpacity 
-        style={styles.signInButton} 
-        onPress={onNavigateToSignIn}
-        disabled={loading}
-      >
-        <Text style={styles.signInText}>
-          Already have an account? Sign In
-        </Text>
-      </TouchableOpacity>
+      {/* ✅ DEBUGGING: Replaced TouchableOpacity with a standard Button */}
+      <View style={styles.signInButton}>
+        <Button
+            title="Already have an account? Sign In"
+            onPress={onNavigateToSignIn}
+            disabled={loading}
+        />
+      </View>
     </View>
   );
 };
@@ -130,16 +129,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   signInButton: {
-    padding: 15,
-  },
-  signInText: {
-    color: '#007AFF',
-    textAlign: 'center',
-    fontSize: 16,
-    fontWeight: '500',
+    marginTop: 10,
   },
 });
 

@@ -5,42 +5,54 @@ import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
 
 // Define the types for the props this component will receive
 type SignInFormProps = {
-  username?: string;
+  email?: string;
   password?: string;
   error?: string;
-  onUsernameChange: (text: string) => void;
+  loading?: boolean;
+  onEmailChange: (text: string) => void;
   onPasswordChange: (text: string) => void;
   onSignIn: () => void;
 };
 
-const SignInForm = ({ 
-  username, 
-  password, 
-  error, 
-  onUsernameChange, 
-  onPasswordChange, 
-  onSignIn 
-}: SignInFormProps) => {
+const SignInForm: React.FC<SignInFormProps> = ({
+  email,
+  password,
+  error,
+  loading = false,
+  onEmailChange,
+  onPasswordChange,
+  onSignIn,
+}) => {
   return (
     <View style={styles.formContainer}>
-      {/* Conditionally render the error message only if it exists */}
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
+      
       <TextInput
         style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={onUsernameChange}
+        placeholder="Email"
+        value={email}
+        onChangeText={onEmailChange} // This line sends the text to the login screen
         autoCapitalize="none"
+        keyboardType="email-address"
+        editable={!loading}
       />
+      
       <TextInput
         style={styles.input}
         placeholder="Password"
         value={password}
-        onChangeText={onPasswordChange}
-        secureTextEntry // Hides the password
+        onChangeText={onPasswordChange} // This line sends the text to the login screen
+        secureTextEntry
+        editable={!loading}
       />
-      <Button title="Sign In" onPress={onSignIn} />
+      
+      <View style={styles.buttonContainer}>
+        <Button 
+          title={loading ? "Signing In..." : "Sign In"} 
+          onPress={onSignIn}
+          disabled={loading}
+        />
+      </View>
     </View>
   );
 };
@@ -51,17 +63,25 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    borderColor: '#ccc',
+    borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 8,
     marginBottom: 16,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     backgroundColor: 'white',
+    fontSize: 16,
   },
   errorText: {
-    color: 'red',
-    marginBottom: 12,
+    color: '#d73a49',
+    marginBottom: 16,
     textAlign: 'center',
+    fontSize: 14,
+    backgroundColor: '#f8d7da',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonContainer: {
+    marginTop: 10,
   },
 });
 
